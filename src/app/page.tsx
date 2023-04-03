@@ -1,110 +1,195 @@
 "use client";
 
+import React, { useState, useCallback } from "react";
+import anime from "animejs";
 import Image from "next/image";
+import NumberFormat from 'react-number-format'
 import { Inter, Rubik } from "@next/font/google";
 import styles from "./page.module.css";
+import {
+  Modal,
+  useModal,
+  Button,
+  Card,
+  Text,
+  Grid,
+  Navbar,
+  Avatar,
+  Input,
+} from "@nextui-org/react";
 
 const rubik = Rubik({ subsets: ["latin"], variable: "--font-rubik" });
 
 export default function Home() {
+  const [playing, setPlaying] = useState(false);
+  const { setVisible, bindings } = useModal();
+  const [nominal, setNominal] = useState("");
+
+  const handleClick = () => {
+    if (playing) return;
+    setPlaying(!playing);
+    anime({
+      targets: ".card",
+      // scale: [{ value: 1 }, { value: 1.1 }, { value: 1, delay: 250 }],
+      rotateY: { value: "+=180" },
+      easing: "easeInOutSine",
+      duration: 400,
+      complete: () => {
+        setPlaying(false);
+      },
+    });
+  };
+
+  const handleOnChange = useCallback((event: any) => {
+    setNominal(event.target.value);
+  }, []);
+
+  const regex = new RegExp(/^(?!0|\.00)[0-9]+(,\d{3})/, "g");
+
   return (
-    <main className="h-full m-8">
-      <div className="flex justify-between sm:px-2 flex-col md:flex-row gap-4">
-        <div className="flex-1 ">
-          <div className="h-52 bg-gradient-to-r from-cyan-500 to-blue-700 p-8 rounded-3xl transition ease-in-out hover:-translate-y-1 hover:scale-105">
-            <h1
-              className={`${rubik.variable} font-sans text-lg font-light text-white`}
+    <div style={{ height: "100vh" }}>
+      <Navbar isBordered variant="floating">
+        <Navbar.Toggle showIn="xs" />
+        <Navbar.Brand
+          css={{
+            "@xs": {
+              w: "12%",
+            },
+          }}
+        >
+          <Text b color="inherit">
+            Pitih
+          </Text>
+        </Navbar.Brand>
+        <Navbar.Content>
+          <Navbar.Item>
+            <Avatar
+              bordered
+              as="button"
+              color="secondary"
+              size="md"
+              src="https://i.pravatar.cc/150?u=a042581f4e29026704d"
+            />
+          </Navbar.Item>
+        </Navbar.Content>
+      </Navbar>
+      <Grid.Container gap={2} justify="center">
+        <Grid xs={12} md={6} sm={6} justify="center" direction="column">
+          <div
+            className="card"
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              transformStyle: "preserve-3d",
+              position: "relative",
+            }}
+          >
+            <Card
+              onClick={handleClick}
+              isPressable
+              disableAnimation
+              variant="flat"
+              style={{
+                width: 400,
+                height: 200,
+                backgroundColor: "blue",
+                backfaceVisibility: "hidden",
+              }}
             >
-              Uang Sekarang
-            </h1>
-            <h1
-              className={`${rubik.variable} font-sans text-xl font-bold text-white`}
+              <Card.Body>
+                <Text style={{ color: "white" }}>Uang Masuk</Text>
+              </Card.Body>
+            </Card>
+            <Card
+              onClick={handleClick}
+              isPressable
+              disableAnimation
+              variant="flat"
+              style={{
+                width: 400,
+                height: 200,
+                position: "absolute",
+                top: 0,
+                transform: "rotateY(180deg)",
+                backgroundColor: "purple",
+              }}
             >
-              Rp. 10.000.000
-            </h1>
+              <Card.Body>
+                <Text style={{ color: "white" }}>Uang Keluar</Text>
+              </Card.Body>
+            </Card>
           </div>
-          <div className="flex justify-between my-6 gap-4">
-            <button
-              className={`${rubik.variable} font-sans flex-1 border border-blue-700 border-2 hover:bg-blue-700 hover:text-white bg-white rounded-full border-blue-700 py-3 text-blue-700`}
-            >
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              marginBlock: 20,
+            }}
+          >
+            <Button color={"default"} flat onPress={() => setVisible(true)}>
               Uang Masuk
-            </button>
-            <button
-              className={`${rubik.variable} font-sans flex-1 border border-gray-700 border-2 hover:bg-gray-700 hover:text-white bg-white rounded-full border-gray-700 py-3 text-gray-700`}
-            >
+            </Button>
+            <Button color={"default"} flat>
               Uang Keluar
-            </button>
+            </Button>
           </div>
-        </div>
-        <div className="flex-1">
-          <div className="flex justify-start">
-            <h1
-              className={`${rubik.variable} font-sans text-xl font-bold mb-4 flex-1`}
+        </Grid>
+        <Grid xs={12} md={6} sm={6} justify="center" direction="column">
+          <Text>Histori</Text>
+          {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((e) => (
+            <Card
+              variant="flat"
+              isPressable
+              style={{
+                marginBottom: 10,
+                backgroundColor: "#f4f4f4",
+                borderColor: "#f4f4f4",
+              }}
             >
-              Histori
-            </h1>
-          </div>
-          <div>
-            <div className="bg-gray-100 p-2 rounded-xl mb-2">
-              <div className="flex justify-between">
-                <div>
-                  <p
-                    className={`${rubik.variable} font-sans text-sm font-semibold`}
-                  >
-                    Nama pemasukan
-                  </p>
-                  <p className={`${rubik.variable} font-sans text-sm`}>
-                    Tanggal
-                  </p>
-                </div>
-                <div
-                  className={`${rubik.variable} font-sans text-md font-black text-green-700`}
-                >
-                  + 5.000.000
-                </div>
-              </div>
-            </div>
-            <div className="bg-gray-100 p-2 rounded-xl mb-2">
-              <div className="flex justify-between">
-                <div>
-                  <p
-                    className={`${rubik.variable} font-sans text-sm font-semibold`}
-                  >
-                    Nama pemasukan
-                  </p>
-                  <p className={`${rubik.variable} font-sans text-sm`}>
-                    Tanggal
-                  </p>
-                </div>
-                <div
-                  className={`${rubik.variable} font-sans text-md font-black text-green-700`}
-                >
-                  10.000.000
-                </div>
-              </div>
-            </div>
-            <div className="bg-gray-100 p-2 rounded-xl mb-2">
-              <div className="flex justify-between">
-                <div>
-                  <p
-                    className={`${rubik.variable} font-sans text-sm font-semibold`}
-                  >
-                    Nama pengeluaran
-                  </p>
-                  <p className={`${rubik.variable} font-sans text-sm`}>
-                    Tanggal
-                  </p>
-                </div>
-                <div
-                  className={`${rubik.variable} font-sans text-md font-black text-red-700`}
-                >
-                  - 1.000.000
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </main>
+              <Card.Body>
+                <p>Tgl</p>
+                <h4>Nama Uang</h4>
+              </Card.Body>
+            </Card>
+          ))}
+        </Grid>
+      </Grid.Container>
+      <Modal
+        scroll
+        fullScreen
+        closeButton
+        aria-labelledby="modal-title"
+        aria-describedby="modal-description"
+        {...bindings}
+      >
+        <Modal.Header>
+          <Text id="modal-title" size={18}>
+            Modal with a lot of content
+          </Text>
+        </Modal.Header>
+        <Modal.Body>
+          <form>
+            <Input
+              animated={false}
+              shadow={false}
+              placeholder="Nominal"
+              type={"tel"}
+              labelLeft="Rp."
+              size="xl"
+              onChange={handleOnChange}
+              value={parseInt(nominal).toLocaleString("id")}
+            />
+          </form>
+        </Modal.Body>
+        <Modal.Footer style={{ justifyContent: "center" }}>
+          <Button
+            onPress={() => console.log(typeof nominal, parseInt(nominal))}
+          >
+            Tambah Uang Masuk
+          </Button>
+        </Modal.Footer>
+      </Modal>
+    </div>
   );
 }
